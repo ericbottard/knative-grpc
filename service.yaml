@@ -1,0 +1,15 @@
+apiVersion: serving.knative.dev/v1alpha1
+kind: Service
+metadata:
+  name: repeater
+  namespace: default
+spec:
+  runLatest:
+    configuration:
+      revisionTemplate:
+        spec:
+          container:
+            image: github.com/ericbottard/knative-grpc
+            ports:
+              - name: h2c
+                containerPort: 8080
