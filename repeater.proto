@@ -9,8 +9,10 @@ service Repeater {
 message RepeatRequest {
     int64 quantity = 1;
     string content = 2;
+    int32 responsePaddingSize = 3;
 }
 
 message RepeatResponse {
-    string content = 2;
+    string content = 1;
+    bytes padding = 2;
 }

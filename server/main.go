@@ -17,18 +17,19 @@ type RepeaterService struct {
 
 func (*RepeaterService) Repeat(server Repeater_RepeatServer) error {
 	for true {
-		input, err := server.Recv()
+		request, err := server.Recv()
 		if err == io.EOF {
-			fmt.Println("Aborting on Recv: EOF")
+			fmt.Println("Done: EOF")
 			return nil
 		}
 		if err != nil {
 			fmt.Printf("Aborting on Recv: error %v\n", err)
 			return err
 		}
-		fmt.Printf("Got %v\n", input)
-		for i := int64(0); i < input.Quantity; i++ {
-			err := server.Send(&RepeatResponse{Content: input.Content})
+		fmt.Printf("Got %v\n", request)
+		for i := int64(0); i < request.Quantity; i++ {
+			response := RepeatResponse{Content: request.Content, Padding: make([]byte, request.ResponsePaddingSize)}
+			err := server.Send(&response)
 			if err != nil {
 				fmt.Printf("Aborting on Send: error %v\n", err)
 				return err
@@ -43,7 +44,7 @@ func main() {
 	if len(os.Args) > 1 {
 		port = os.Args[1]
 	}
-	fmt.Printf("starting at port %s", port)
+	fmt.Printf("starting at port %s\n", port)
 	listener, err := net.Listen("tcp", ":"+port)
 	if err != nil {
 		log.Panicf("error: %v", err)
