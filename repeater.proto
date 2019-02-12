@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+service Repeater {
+
+    rpc Repeat (stream RepeatRequest) returns (stream RepeatResponse) {
+    }
+}
+
+message RepeatRequest {
+    int64 quantity = 1;
+    string content = 2;
+}
+
+message RepeatResponse {
+    string content = 2;
+}
