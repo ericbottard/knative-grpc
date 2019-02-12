@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"github.com/ericbottard/knative-grpc/repeater"
 	"google.golang.org/grpc"
+	"log"
 	"os"
 	"strconv"
 )
@@ -37,21 +38,30 @@ func main() {
 	authority := os.Args[2]
 	padding, _ := strconv.Atoi(os.Args[3])
 
-	conn, _ := grpc.Dial(address, grpc.WithInsecure(), grpc.WithAuthority(authority))
+	conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithAuthority(authority))
+	if err != nil {
+		log.Panicf("error: %v", err)
+	}
 	defer unsafeClose(conn)
 	client := repeater.NewRepeaterClient(conn)
 
-	repeaterClient, _ := client.Repeat(context.Background())
+	repeaterClient, err := client.Repeat(context.Background())
+	if err != nil {
+		log.Panicf("error: %v", err)
+	}
 	request := repeater.RepeatRequest{
 		Quantity:            3,
 		Content:             "hello",
 		ResponsePaddingSize: int32(padding),
 	}
-	_ = repeaterClient.Send(&request)
+	err = repeaterClient.Send(&request)
+	if err != nil {
+		log.Panicf("error: %v", err)
+	}
 
 	for i := int64(0); i < request.Quantity; i++ {
-		response, _ := repeaterClient.Recv()
-		fmt.Printf("%v\n", response)
+		response, err := repeaterClient.Recv()
+		fmt.Printf("response: %v, error: %v\n", response, err)
 	}
 }
 
