@@ -9,6 +9,7 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 )
 
@@ -44,17 +45,20 @@ func main() {
 	if len(os.Args) > 1 {
 		port = os.Args[1]
 	}
-	fmt.Printf("starting at port %s\n", port)
-	listener, err := net.Listen("tcp", ":"+port)
+	serverPort, err := strconv.Atoi(port)
+	if err != nil {
+		log.Panicf("error: %v", err)
+	}
+	fmt.Printf("starting at port %d\n", serverPort)
+	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", serverPort))
 	if err != nil {
 		log.Panicf("error: %v", err)
 	}
 
-	server := grpc.NewServer()
-	service := RepeaterService{}
-	RegisterRepeaterServer(server, &service)
+	grpcServer := grpc.NewServer()
+	RegisterRepeaterServer(grpcServer, &RepeaterService{})
 
-	err = server.Serve(listener)
+	err = grpcServer.Serve(listener)
 	if err != nil {
 		log.Panicf("error: %v", err)
 	}
@@ -63,6 +67,6 @@ func main() {
 		signals := make(chan os.Signal, 1)
 		signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
 		<-signals
-		server.GracefulStop()
+		grpcServer.GracefulStop()
 	}()
 }

@@ -18,13 +18,50 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"github.com/ericbottard/knative-grpc/repeater"
+	"google.golang.org/grpc"
 	"os"
+	"strconv"
 )
 
 func main() {
-	if len(os.Args) < 6 {
-		fmt.Printf("Usage: %s [address] [host/authority] [message] [count] [padding]%n", os.Args[0])
+
+	if len(os.Args) < 4 {
+		fmt.Printf("Usage: %s [address] [host/authority] [response-padding-size]\n", os.Args[0])
 		os.Exit(2)
 	}
+
+	address := os.Args[1]
+	authority := os.Args[2]
+	padding, _ := strconv.Atoi(os.Args[3])
+
+	conn, _ := grpc.Dial(address, grpc.WithInsecure(), grpc.WithAuthority(authority))
+	defer unsafeClose(conn)
+	client := repeater.NewRepeaterClient(conn)
+
+	repeaterClient, _ := client.Repeat(context.Background())
+	request := repeater.RepeatRequest{
+		Quantity:            3,
+		Content:             "hello",
+		ResponsePaddingSize: int32(padding),
+	}
+	_ = repeaterClient.Send(&request)
+
+	for i := int64(0); i < request.Quantity; i++ {
+		response, _ := repeaterClient.Recv()
+		fmt.Printf("%v\n", response)
+	}
+}
+
+func unsafeClose(listener closeable) {
+	err := listener.Close()
+	if err != nil {
+		panic(err)
+	}
+}
+
+type closeable interface {
+	Close() error
 }

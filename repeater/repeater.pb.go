@@ -182,7 +182,7 @@ func (x *repeaterRepeatClient) Recv() (*RepeatResponse, error) {
 	return m, nil
 }
 
-// RepeaterServer is the server API for Repeater service.
+// RepeaterServer is the servermain API for Repeater service.
 type RepeaterServer interface {
 	Repeat(Repeater_RepeatServer) error
 }
