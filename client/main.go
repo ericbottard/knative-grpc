@@ -24,7 +24,7 @@ import (
 
 func main() {
 	if len(os.Args) < 6 {
-		fmt.Printf("Usage: %s [address] [host/authority] [message] [count] [padding]", os.Args[0])
+		fmt.Printf("Usage: %s [address] [host/authority] [message] [count] [padding]%n", os.Args[0])
 		os.Exit(2)
 	}
 }
