@@ -1,0 +1,16 @@
+= gRPC streaming on knative
+
+This repository contains a small sample that shows current shortcomings with
+gRPC support knative serving.
+
+== Building
+You need `make`, `docker`, `kubectl` and `go 1.11+` installed to build and use this sample.
+
+Assuming you have access to a knative environment, with knative serving later than this https://github.com/knative/serving/commit/d92cc73ba14ba7f7ffad30256b77891914dc40be[commit]:
+
+```
+export IMAGE=gcr.io/<yourproject>/<name>  # or <yourdockerid>/<name> etc...
+make deploy # Builds the image and creates a knative service
+```
+
+

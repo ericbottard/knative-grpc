@@ -1,2 +1,4 @@
-.idea
-run-client
+.idea/
+client
+server
+.docker-image
