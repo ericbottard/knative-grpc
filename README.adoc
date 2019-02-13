@@ -17,7 +17,7 @@ make deploy # Builds the image and creates a knative service
 Obtain the IP of your knative cluster and, assuming the default `.example.com` domain mapping, run the client like so:
 ```
 make client
-./client [cluster-address] repeater.default.example.com 0
+./client [cluster-address]:80 repeater.default.example.com 0
 ```
 
 This shows that responses don't come through.
@@ -33,6 +33,6 @@ make run-server-local
 Running on knative, if the response messages are big enough, they come through immediately: force a padding of 4096
 bytes and witness correct behavior similar to local example:
 ```
-./client [cluster-address] repeater.default.example.com 4096
+./client [cluster-address]:80 repeater.default.example.com 4096
 ```  
 
