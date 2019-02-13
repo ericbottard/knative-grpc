@@ -6,11 +6,33 @@ gRPC support knative serving.
 == Building
 You need `make`, `docker`, `kubectl` and `go 1.11+` installed to build and use this sample.
 
-Assuming you have access to a knative environment, with knative serving later than this https://github.com/knative/serving/commit/d92cc73ba14ba7f7ffad30256b77891914dc40be[commit]:
+Assuming you have access to a knative environment, with knative serving later than this
+https://github.com/knative/serving/commit/d92cc73ba14ba7f7ffad30256b77891914dc40be[commit]:
 
 ```
 export IMAGE=gcr.io/<yourproject>/<name>  # or <yourdockerid>/<name> etc...
 make deploy # Builds the image and creates a knative service
 ```
 
+Obtain the IP of your knative cluster and, assuming the default `.example.com` domain mapping, run the client like so:
+```
+make client
+./client [cluster-address] repeater.default.example.com 0
+```
+
+This shows that responses don't come through.
+
+Contrast with this running the server locally:
+
+```
+make run-server-local
+./client localhost localhost 0   # in a different terminal session
+```
+
+
+Running on knative, if the response messages are big enough, they come through immediately: force a padding of 4096
+bytes and witness correct behavior similar to local example:
+```
+./client [cluster-address] repeater.default.example.com 4096
+```  
 
