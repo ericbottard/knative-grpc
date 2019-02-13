@@ -24,6 +24,7 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"os"
+	"os/signal"
 	"strconv"
 )
 
@@ -49,20 +50,32 @@ func main() {
 	if err != nil {
 		log.Panicf("error: %v", err)
 	}
+
+
+	go func() {
+		for {
+			response, err := repeaterClient.Recv()
+			fmt.Printf("response: %v, error: %v\n", response, err)
+		}
+	}()
+
+
 	request := repeater.RepeatRequest{
 		Quantity:            3,
 		Content:             "hello",
 		ResponsePaddingSize: int32(padding),
 	}
+
 	err = repeaterClient.Send(&request)
 	if err != nil {
 		log.Panicf("error: %v", err)
 	}
 
-	for i := int64(0); i < request.Quantity; i++ {
-		response, err := repeaterClient.Recv()
-		fmt.Printf("response: %v, error: %v\n", response, err)
-	}
+	fmt.Println("Press Ctrl-C to complete...")
+	signalChan := make(chan os.Signal, 1)
+	signal.Notify(signalChan, os.Interrupt)
+	<-signalChan
+	fmt.Println("Terminating now...")
 }
 
 func unsafeClose(listener closeable) {
