@@ -1,7 +1,7 @@
 = gRPC streaming on knative
 
 This repository contains a small sample that shows current shortcomings with
-gRPC support knative serving.
+gRPC support knative serving, more precisely issue https://github.com/knative/serving/issues/3188[#3188].
 
 == Building
 You need `make`, `docker`, `kubectl` and `go 1.11+` installed to build and use this sample.
@@ -26,7 +26,7 @@ Contrast with this running the server locally:
 
 ```
 make run-server-local
-./client localhost localhost 0   # in a different terminal session
+./client localhost:8080 localhost:8080 0   # in a different terminal session
 ```
 
 
